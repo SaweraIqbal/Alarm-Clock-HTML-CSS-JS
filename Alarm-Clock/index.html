@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alarm Clock App</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+    }
+
+    h1 {
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: #e94560;
+      text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+    }
+
+    /* Analog Clock */
+    .clock-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+    }
+    
+    .clock {
+      width: 100%;
+      height: 100%;
+      border: 10px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      position: relative;
+      box-shadow: 
+        0 0 30px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    
+    .clock::after {
+      content: '';
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: #e94560;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    
+    .hand {
+      position: absolute;
+      bottom: 50%;
+      left: 50%;
+      transform-origin: bottom;
+      border-radius: 10px 10px 0 0;
+    }
+    
+    .hour {
+      width: 8px;
+      height: 25%;
+      background: #fff;
+      transform: translateX(-50%) rotate(0deg);
+    }
+    
+    .minute {
+      width: 6px;
+      height: 35%;
+      background: #0fcece;
+      transform: translateX(-50%) rotate(0deg);
+    }
+    
+    .second {
+      width: 2px;
+      height: 40%;
+      background: #e94560;
+      transform: translateX(-50%) rotate(0deg);
+    }
+
+    /* Digital clock */
+    .digital {
+      font-size: 2.5rem;
+      font-weight: 700;
+      padding: 15px 30px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      letter-spacing: 2px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      color: #0fcece;
+      text-shadow: 0 0 5px rgba(10, 175, 175, 0.7);
+    }
+
+    .date {
+      font-size: 1.2rem;
+      margin-top: 5px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Alarm Controls */
+    .alarm-container {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 15px;
+      width: 100%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0fcece;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    select, button {
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    
+    select {
+      flex: 1;
+      min-width: 80px;
+    }
+    
+    select option {
+      background: #16213e;
+    }
+    
+    button {
+      background: #e94560;
+      min-width: 120px;
+    }
+    
+    button:hover {
+      background: #ff577f;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    #stopAlarm {
+      background: #0fcece;
+    }
+    
+    #stopAlarm:hover {
+      background: #13e0e0;
+    }
+    
+    .custom-audio {
+      margin-top: 15px;
+      text-align: center;
+    }
+    
+    .alarm-status {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: 600;
+      min-height: 24px;
+      color: #ff577f;
+    }
+    
+    .alarm-list {
+      margin-top: 20px;
+      text-align: center;
+    }
+    
+    .alarm-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    
+    .delete-alarm {
+      background: #ff3030;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-label {
+      display: inline-block;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 10px;
+    }
+
+    .file-label:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .current-alarm-file {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Responsive design */
+    @media (max-width: 500px) {
+      .digital {
+        font-size: 2rem;
+        padding: 12px 20px;
+      }
+      
+      .clock-container {
+        width: 220px;
+        height: 220px;
+      }
+      
+      select, button {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Alarm Clock</h1>
+    
+    <!-- Analog Clock -->
+    <div class="clock-container">
+      <div class="clock">
+        <div class="hand hour" id="hour"></div>
+        <div class="hand minute" id="minute"></div>
+        <div class="hand second" id="second"></div>
+      </div>
+    </div>
+
+    <!-- Digital Clock -->
+    <div class="digital" id="digitalClock">00:00:00 AM</div>
+    <div class="date" id="date"></div>
+
+    <!-- Alarm Settings -->
+    <div class="alarm-container">
+      <h2>Set Alarm</h2>
+      <div class="controls">
+        <select id="hours"></select>
+        <select id="minutes"></select>
+        <select id="seconds"></select>
+        <select id="ampm">
+          <option>AM</option>
+          <option>PM</option>
+        </select>
+      </div>
+
+      <div class="controls">
+        <button id="setAlarm">Set Alarm</button>
+        <button id="stopAlarm">Stop Alarm</button>
+      </div>
+      
+      <div class="custom-audio">
+        <label for="customAudio" class="file-label">Choose Custom Alarm Sound</label>
+        <input type="file" id="customAudio" accept="audio/*">
+        <div class="current-alarm-file" id="currentAlarmFile">Default alarm sound</div>
+      </div>
+      
+      <div class="alarm-status" id="alarmStatus"></div>
+      
+      <div class="alarm-list">
+        <h3>Active Alarms</h3>
+        <div id="alarmList"></div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="alarmSound" loop>
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
